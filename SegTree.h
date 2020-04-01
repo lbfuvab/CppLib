@@ -2,7 +2,7 @@
 
 #include<algorithm>
 
-template<unsigned depth, typename T, typename Compare_T=std::greater<T>>
+template<unsigned depth, typename T, typename Compare_T=std::less<T>>
 class SegTree{
     private:
         T Max;
@@ -24,16 +24,19 @@ class SegTree{
                 T tmp1 = Children[0].GetRangeMax(RangeMin, ((1u)<<depth)-1 );
                 T tmp2 = Children[1].GetRangeMax(0, RangeMax - ((1u)<<(depth-1)) );
 
-                return (Compare_T()(tmp1,tmp2))? tmp1 : tmp2;
+                return (Compare_T()(tmp1,tmp2))? tmp2 : tmp1;
             }
         }
         T GetVal(unsigned n){
             return Children[n / ((1u)<<(depth-1)) ].GetVal(n % ((1u)<<(depth-1)) );
         }
         void SetVal(unsigned n, T Val){
-            if(Compare_T()(Val, Max))
-                Max = Val;
             Children[n / ((1u)<<(depth-1)) ].SetVal(n % ((1u)<<(depth-1)), Val);
+
+            T tmp1 = Children[0].GetMax();
+            T tmp2 = Children[1].GetMax();
+
+            Max = (Compare_T()(tmp1,tmp2))? tmp2 : tmp1;
             return;
         }
 };
